@@ -13,7 +13,7 @@ The MVP focuses on one repeatable loop:
 - **Platform:** PC/Web browser
 - **Runtime:** Client-side JavaScript
 - **Rendering:** HTML Canvas 2D
-- **Input:** Keyboard, mouse, and browser pointer events
+- **Input:** Keyboard, mouse, touch, and browser pointer events
 - **Audio:** Web Audio API oscillator-based sound effects
 - **Persistence:** Browser `localStorage`
 - **Backend:** None
@@ -210,6 +210,18 @@ The default bullet direction is `0°`, meaning the direction from the player to 
 - Gives approximately `0.22` seconds of invulnerability.
 - Produces particle and audio feedback.
 
+### Mobile touch controls
+
+On small screens, a touch-control layer is displayed during active gameplay:
+
+- **Left virtual joystick:** drag to move in any direction.
+- **Right aim/fire joystick:** press and hold to fire; drag the joystick to change the projectile direction.
+- **Dash button:** tap to dash using the current joystick direction.
+
+Touch input feeds the same movement, aiming, shooting, and dash systems used by desktop controls. The aim joystick updates the player's aim vector continuously while held, so bullets and the ship's facing direction follow the joystick direction. The controls are hidden on the menu, pause screen, upgrade screen, and result screen.
+
+The mobile layout uses dynamic viewport sizing, `viewport-fit=cover`, safe-area insets, responsive control sizing, and a compact landscape breakpoint. Joystick input is normalized immediately with a small dead zone so direction changes do not depend on keyboard-style repeat timing.
+
 ## 9. Player Systems
 
 The player starts with:
@@ -217,8 +229,8 @@ The player starts with:
 - Position: arena center
 - Radius: `14`
 - Speed: `260`
-- Hull: `3`
-- Maximum hull: `3`
+- Hull: `5`
+- Maximum hull: `5`
 - Fire delay: `0.16`
 - Dash cooldown: `0`
 - Salvage magnet range: `80`
@@ -300,7 +312,7 @@ Score values:
 
 ## 13. Upgrades
 
-After each completed sector, three upgrade cards are shown in randomized order. The player selects one before continuing.
+After each completed sector, one upgrade is selected automatically in the background. Gameplay does not pause and no upgrade popup interrupts the run.
 
 ### Overclocked coil
 
@@ -308,14 +320,13 @@ Description: `Fire rate +25%`
 
 Implementation: Multiplies player fire delay by `0.75`.
 
-### Reactive plating
+### Emergency repair
 
-Description: `Maximum hull +1`
+Description: `Restore +1 hull`
 
 Implementation:
 
-- Maximum hull increases by `1`.
-- Current hull increases by `1`.
+- Current hull increases by `1`, up to the fixed maximum of `5`.
 
 ### Salvage magnet
 
@@ -347,13 +358,9 @@ Displays:
 - Hull pips
 - Pause button
 
-### Upgrade screen
+### Automatic sector upgrade
 
-Displays:
-
-- Sector-cleared message
-- Three randomized upgrade cards
-- Upgrade names and descriptions
+The previous sector-cleared upgrade popup is no longer shown. A random upgrade is applied immediately when a sector ends, while the next sector continues without an interruption.
 
 ### Pause screen
 
@@ -473,4 +480,3 @@ The current MVP can be extended through:
 - More persistent statistics
 - Separate audio assets if synthesized audio becomes insufficient
 - A dedicated scene/state manager if the number of screens grows
-
